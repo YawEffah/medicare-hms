@@ -1,0 +1,90 @@
+{% extends "base/base.html" %}
+
+{% block title %}New Medical Record – MediCare HMS{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block breadcrumbs %}
+<span class="text-slate-300">/</span>
+<a href="{% url 'core:record_list' %}" class="hover:text-teal-600">Records</a>
+<span class="text-slate-300">/</span>
+<span>{{ title }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-premium p-10">
+        <div class="mb-10 flex items-center gap-4">
+            <div class="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center">
+                <i data-lucide="clipboard-plus" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-slate-900">{{ title }}</h2>
+                <p class="text-slate-400 text-sm mt-0.5">Document the clinical findings and treatment for this patient visit.</p>
+            </div>
+        </div>
+
+        <form method="post" class="space-y-8">
+            {% csrf_token %}
+
+            <!-- Main Record Fields -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                {% for field in form %}
+                <div class="{% if field.name == 'chief_complaint' or field.name == 'diagnosis' or field.name == 'treatment' or field.name == 'prescription' or field.name == 'notes' %}md:col-span-2{% endif %} space-y-2">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1 flex items-center justify-between">
+                        <span>{{ field.label }}</span>
+                        {% if field.field.required %}<span class="text-rose-500 font-bold">* Required</span>{% endif %}
+                    </label>
+                    <div class="relative">
+                        {{ field }}
+                        {% if field.errors %}
+                        <div class="absolute -right-2 -top-2 w-5 h-5 bg-rose-500 text-white rounded-full flex items-center justify-center text-[10px]">!</div>
+                        {% endif %}
+                    </div>
+                    {% if field.errors %}
+                    <p class="text-rose-500 text-[10px] font-bold px-1">{{ field.errors.0 }}</p>
+                    {% endif %}
+                    {% if field.help_text %}
+                    <p class="text-slate-400 text-[10px] font-medium px-1 italic">{{ field.help_text }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Vital Signs Section -->
+            {% if vital_form %}
+            <div class="mt-12 pt-10 border-t border-slate-100">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                        <i data-lucide="heart-pulse" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-slate-900 font-bold text-lg">Vital Signs</h3>
+                        <p class="text-slate-400 text-xs">Record patient vitals for this visit (Optional)</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    {% for field in vital_form %}
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-1">{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Submit -->
+            <div class="mt-12 pt-8 border-t border-slate-100 flex items-center justify-end gap-4">
+                <a href="javascript:history.back()" class="px-8 py-3 bg-slate-50 text-slate-500 rounded-2xl text-sm font-bold hover:bg-slate-100 transition-all uppercase tracking-widest">
+                    Cancel
+                </a>
+                <button type="submit" class="px-10 py-3 bg-teal-600 text-white rounded-2xl text-sm font-bold hover:bg-teal-700 transition-all shadow-lg shadow-teal-600/20 uppercase tracking-widest flex items-center gap-2">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    {% if record %}Update Record{% else %}Save Record{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

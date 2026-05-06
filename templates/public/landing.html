@@ -1,0 +1,118 @@
+{% extends "base/base.html" %}
+
+{% block title %}Welcome to MediCare HMS{% endblock %}
+
+{% block auth_content %}
+<div class="min-h-screen bg-slate-50 font-sans text-slate-900 relative overflow-hidden">
+    <!-- Navbar -->
+    <nav class="absolute top-0 w-full px-8 py-6 flex justify-between items-center z-50">
+        <div class="flex items-center gap-3">
+            <div
+                class="w-10 h-10 bg-teal-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-teal-500/20">
+                <i data-lucide="activity" class="w-6 h-6"></i>
+            </div>
+            <span class="font-bold text-xl tracking-tight text-slate-900">MediCare</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="{% url 'accounts:login' %}"
+                class="text-slate-500 hover:text-teal-600 font-bold text-sm transition-colors">Login</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main
+        class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 px-8 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 z-10">
+
+        <!-- Text Content -->
+        <div class="w-full lg:w-1/2">
+            <div
+                class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-50 border border-teal-100 text-teal-700 text-xs font-bold uppercase tracking-wider mb-8">
+                <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
+                Now Accepting New Patients
+            </div>
+
+            <h1 class="text-5xl lg:text-7xl font-bold leading-[1.1] mb-6 text-slate-900">
+                Premium Healthcare, <br>
+                <span class="text-teal-600">At Your Fingertips.</span>
+            </h1>
+
+            <p class="text-lg text-slate-500 mb-10 max-w-lg leading-relaxed">
+                Experience seamless medical care with our modern patient portal. Book appointments, view your medical
+                history, and manage your health securely from any device.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center gap-4">
+                <a href="{% url 'accounts:patient_register' %}"
+                    class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm shadow-xl shadow-teal-600/20 transition-all flex items-center justify-center gap-2">
+                    Register as Patient
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+                <a href="{% url 'accounts:login' %}"
+                    class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 font-bold text-sm border border-slate-200 transition-all flex items-center justify-center gap-2">
+                    Login
+                </a>
+            </div>
+
+            <div class="mt-12 flex items-center gap-6 text-sm text-slate-500 font-medium">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="check-circle-2" class="w-5 h-5 text-teal-500"></i>
+                    <span>Secure Data</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i data-lucide="check-circle-2" class="w-5 h-5 text-teal-500"></i>
+                    <span>Instant Booking</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i data-lucide="check-circle-2" class="w-5 h-5 text-teal-500"></i>
+                    <span>Digital Records</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Abstract Graphics Right -->
+        <div class="w-full lg:w-1/2 relative">
+            <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-teal-200/50 rounded-full blur-[100px] -z-10">
+            </div>
+            <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-blue-200/50 rounded-full blur-[80px] -z-10 ml-20 mt-20">
+            </div>
+
+            <div
+                class="bg-white/60 backdrop-blur-xl border border-white p-8 rounded-[2rem] shadow-2xl relative z-10 transform rotate-2 hover:rotate-0 transition-transform duration-500">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-lg">Upcoming Appointment</h3>
+                        <p class="text-sm text-slate-500">Cardiology Dept</p>
+                    </div>
+                    <div class="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center">
+                        <i data-lucide="calendar" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-50/50 border border-slate-100">
+                        <div class="w-10 h-10 rounded-full bg-slate-200 flex-shrink-0"></div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-900">Dr. Sarah Jenkins</p>
+                            <p class="text-xs text-slate-500">Senior Cardiologist</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-4 rounded-xl bg-teal-600 text-white">
+                            <p class="text-xs text-teal-100 font-medium mb-1">Date</p>
+                            <p class="font-bold">Tomorrow</p>
+                        </div>
+                        <div class="p-4 rounded-xl bg-slate-900 text-white">
+                            <p class="text-xs text-slate-400 font-medium mb-1">Time</p>
+                            <p class="font-bold">10:00 AM</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+{% endblock %}

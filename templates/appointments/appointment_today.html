@@ -1,0 +1,74 @@
+{% extends "base/base.html" %}
+
+{% block title %}Today's Schedule – MediCare HMS{% endblock %}
+{% block page_title %}Today's Schedule{% endblock %}
+
+{% block breadcrumbs %}
+<span class="text-slate-300">/</span>
+<span>{{ today|date:"l, d F Y" }}</span>
+{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'core:appointment_create' %}" class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-teal-600/20 transition-all flex items-center gap-2">
+    <i data-lucide="calendar-plus" class="w-4 h-4"></i>
+    Add Appointment
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-4">
+    {% if appointments %}
+    {% for appt in appointments %}
+    <div class="bg-white rounded-3xl border border-slate-100 shadow-premium p-6 flex flex-col md:flex-row md:items-center gap-6 group hover:border-teal-100 transition-all">
+        <!-- Time -->
+        <div class="flex flex-col items-center justify-center w-20 flex-shrink-0 bg-teal-50 rounded-2xl p-3">
+            <span class="text-teal-600 font-bold text-xl leading-none">{{ appt.appointment_time|time:"g:i" }}</span>
+            <span class="text-teal-400 text-[10px] font-bold uppercase tracking-widest mt-1">{{ appt.appointment_time|time:"A" }}</span>
+        </div>
+
+        <!-- Avatar -->
+        <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center font-bold group-hover:bg-teal-50 group-hover:text-teal-600 transition-colors flex-shrink-0">
+            {{ appt.patient.first_name.0 }}{{ appt.patient.last_name.0 }}
+        </div>
+
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+            <a href="{% url 'core:patient_detail' appt.patient.pk %}" class="text-slate-900 font-bold text-base hover:text-teal-600 block">{{ appt.patient.full_name }}</a>
+            <p class="text-slate-400 text-xs font-medium mt-1">
+                <span class="uppercase tracking-widest">{{ appt.get_appointment_type_display }}</span>
+                <span class="mx-1 text-slate-200">·</span>
+                Dr. {{ appt.doctor.get_full_name }}
+            </p>
+            {% if appt.reason %}
+            <p class="text-slate-500 text-xs mt-1.5 italic">{{ appt.reason|truncatechars:100 }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Status & Actions -->
+        <div class="flex items-center gap-3 flex-shrink-0">
+            <span class="badge-{{ appt.status }}">{{ appt.get_status_display }}</span>
+            <a href="{% url 'core:appointment_update' appt.pk %}" class="p-2 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-all">
+                <i data-lucide="edit-2" class="w-4 h-4"></i>
+            </a>
+            <a href="{% url 'core:record_create' %}?patient={{ appt.patient.pk }}&appointment={{ appt.pk }}" class="px-4 py-2 bg-teal-600 text-white rounded-xl text-xs font-bold hover:bg-teal-700 transition-all uppercase tracking-widest">
+                Add Record
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% else %}
+    <div class="bg-white rounded-[2.5rem] border border-dashed border-slate-200 p-20 text-center">
+        <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mx-auto mb-6">
+            <i data-lucide="calendar" class="w-10 h-10"></i>
+        </div>
+        <h3 class="text-slate-900 font-bold text-lg mb-2">No appointments today</h3>
+        <p class="text-slate-400 text-sm mb-6">The schedule is clear for today.</p>
+        <a href="{% url 'core:appointment_create' %}" class="inline-flex items-center gap-2 bg-teal-600 text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-teal-700 transition-all shadow-lg shadow-teal-600/20">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            Schedule an Appointment
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

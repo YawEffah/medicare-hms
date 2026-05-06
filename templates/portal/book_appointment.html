@@ -1,0 +1,103 @@
+{% extends "base/base.html" %}
+
+{% block title %}Book Appointment – MediCare HMS{% endblock %}
+{% block page_title %}Schedule a Visit{% endblock %}
+
+{% block breadcrumbs %}
+<span class="text-slate-300">/</span>
+<span>Book Appointment</span>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-[2rem] border border-slate-100 shadow-premium p-8 lg:p-12">
+        <div class="flex items-center gap-4 mb-10">
+            <div class="w-16 h-16 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center shadow-inner">
+                <i data-lucide="calendar-plus" class="w-8 h-8"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-slate-900">Book an Appointment</h2>
+                <p class="text-slate-500 text-sm">Select a doctor, date, and time for your visit.</p>
+            </div>
+        </div>
+
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Hide the Patient field since it's prefilled and secure in backend -->
+            {{ form.patient }}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Doctor Selection -->
+                <div class="space-y-2 md:col-span-2">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1">Select Doctor</label>
+                    <div class="relative">
+                        <i data-lucide="user" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <select name="{{ form.doctor.name }}" class="form-input pl-12" required>
+                            {% for choice in form.doctor.field.choices %}
+                                <option value="{{ choice.0 }}" {% if form.doctor.value == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% if form.doctor.errors %}<p class="text-rose-500 text-xs mt-1">{{ form.doctor.errors.0 }}</p>{% endif %}
+                </div>
+
+                <!-- Date -->
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1">Date</label>
+                    <div class="relative">
+                        <i data-lucide="calendar" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="date" name="{{ form.appointment_date.name }}" value="{{ form.appointment_date.value|default:'' }}" class="form-input pl-12" required>
+                    </div>
+                    {% if form.appointment_date.errors %}<p class="text-rose-500 text-xs mt-1">{{ form.appointment_date.errors.0 }}</p>{% endif %}
+                </div>
+
+                <!-- Time -->
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1">Time</label>
+                    <div class="relative">
+                        <i data-lucide="clock" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="time" name="{{ form.appointment_time.name }}" value="{{ form.appointment_time.value|default:'' }}" class="form-input pl-12" required>
+                    </div>
+                    {% if form.appointment_time.errors %}<p class="text-rose-500 text-xs mt-1">{{ form.appointment_time.errors.0 }}</p>{% endif %}
+                </div>
+
+                <!-- Type -->
+                <div class="space-y-2 md:col-span-2">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1">Visit Type</label>
+                    <div class="relative">
+                        <i data-lucide="activity" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <select name="{{ form.appointment_type.name }}" class="form-input pl-12">
+                            {% for choice in form.appointment_type.field.choices %}
+                                <option value="{{ choice.0 }}" {% if form.appointment_type.value == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% if form.appointment_type.errors %}<p class="text-rose-500 text-xs mt-1">{{ form.appointment_type.errors.0 }}</p>{% endif %}
+                </div>
+
+                <!-- Reason -->
+                <div class="space-y-2 md:col-span-2">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1">Reason for Visit (Optional)</label>
+                    <textarea name="{{ form.reason.name }}" class="form-input" rows="3" placeholder="Briefly describe your symptoms or reason for visit...">{{ form.reason.value|default:'' }}</textarea>
+                    {% if form.reason.errors %}<p class="text-rose-500 text-xs mt-1">{{ form.reason.errors.0 }}</p>{% endif %}
+                </div>
+                
+                <!-- Status & Notes hidden for patient -->
+                <div class="hidden">
+                    {{ form.status }}
+                    {{ form.notes }}
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-slate-100 flex items-center justify-end gap-4">
+                <a href="{% url 'core:patient_dashboard' %}" class="px-6 py-3 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors">Cancel</a>
+                <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white px-8 py-3 rounded-xl text-sm font-bold shadow-lg shadow-teal-600/20 transition-all flex items-center gap-2">
+                    Confirm Booking
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

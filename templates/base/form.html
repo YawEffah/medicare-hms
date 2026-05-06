@@ -1,0 +1,56 @@
+{% extends "base/base.html" %}
+{% block title %}{{ title }} – MediCare HMS{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+  <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-premium p-10">
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+      {% csrf_token %}
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+        {% for field in form %}
+        <div class="space-y-2">
+          <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1 flex items-center justify-between">
+            <span>{{ field.label }}</span>
+            {% if field.field.required %}<span class="text-rose-500 font-bold">* Required</span>{% endif %}
+          </label>
+          {{ field }}
+          {% if field.errors %}
+            <p class="text-rose-500 text-[10px] font-bold px-1">{{ field.errors.0 }}</p>
+          {% endif %}
+          {% if field.help_text %}
+            <p class="text-slate-400 text-[10px] font-medium px-1 italic">{{ field.help_text }}</p>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+
+      {% if vital_form %}
+      <div class="mt-8 pt-8 border-t border-slate-100">
+        <h3 class="text-slate-900 font-bold text-base mb-6 flex items-center gap-2">
+          <i data-lucide="heart-pulse" class="w-5 h-5 text-blue-500"></i>
+          Vital Signs (Optional)
+        </h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {% for field in vital_form %}
+          <div class="space-y-2">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-1">{{ field.label }}</label>
+            {{ field }}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="flex items-center justify-end gap-4 pt-8 border-t border-slate-100 mt-8">
+        <a href="javascript:history.back()" class="px-8 py-3 bg-slate-50 text-slate-500 rounded-2xl text-sm font-bold hover:bg-slate-100 transition-all uppercase tracking-widest">Cancel</a>
+        <button type="submit" class="px-10 py-3 bg-teal-600 text-white rounded-2xl text-sm font-bold hover:bg-teal-700 transition-all shadow-lg shadow-teal-600/20 uppercase tracking-widest flex items-center gap-2">
+          <i data-lucide="save" class="w-4 h-4"></i>
+          Save
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

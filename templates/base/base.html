@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MediCare HMS{% endblock %}</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/index.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+    <style type="text/tailwindcss">
+        @layer components {
+            .nav-link {
+                @apply flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all duration-200;
+                color: #94a3b8;
+            }
+            .nav-link:hover {
+                background: rgba(255, 255, 255, 0.05);
+                color: #f8fafc;
+            }
+            .nav-link.active {
+                @apply bg-teal-600 text-white shadow-lg shadow-teal-600/20;
+            }
+
+            .btn-primary {
+                @apply inline-flex items-center justify-center bg-teal-600 hover:bg-teal-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-teal-600/20;
+            }
+            .btn-secondary {
+                @apply inline-flex items-center justify-center bg-slate-50 hover:bg-slate-100 text-slate-700 px-5 py-2.5 rounded-xl text-sm font-bold transition-all border border-slate-200;
+            }
+
+            .form-input {
+                @apply w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm transition-all duration-200 outline-none;
+                color: #1e293b;
+            }
+            .form-input:focus {
+                @apply bg-white border-teal-400 ring-4 ring-teal-500/10;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            }
+            .form-input::placeholder {
+                color: #94a3b8;
+            }
+
+            .badge-scheduled { @apply bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider; }
+            .badge-completed { @apply bg-teal-50 text-teal-700 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider; }
+            .badge-cancelled { @apply bg-rose-50 text-rose-700 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider; }
+            .badge-no-show { @apply bg-slate-100 text-slate-500 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider; }
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-slate-50 min-h-screen flex">
+
+    {% if user.is_authenticated %}
+    <!-- Mobile Backdrop -->
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-slate-900/50 z-20 hidden lg:hidden" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-slate-900 text-slate-400 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col">
+        <!-- Logo Area -->
+        <div class="px-8 py-8 flex items-center gap-3">
+            <div class="w-10 h-10 bg-teal-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-teal-500/20">
+                <i data-lucide="activity" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-xl tracking-tight">MediCare</h1>
+                <p class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">Hospital System</p>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+            {% if user.role == 'patient' %}
+            <div class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-slate-600">Patient Portal</div>
+            <a href="{% url 'core:patient_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'patient_dashboard' %}active{% endif %}">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                My Dashboard
+            </a>
+            <a href="{% url 'core:patient_book_appointment' %}" class="nav-link {% if request.resolver_match.url_name == 'patient_book_appointment' %}active{% endif %}">
+                <i data-lucide="calendar-plus" class="w-5 h-5"></i>
+                Book Appointment
+            </a>
+            <div class="px-4 py-2 mt-6 text-[10px] font-bold uppercase tracking-widest text-slate-600">Account</div>
+            <a href="{% url 'accounts:profile' %}" class="nav-link {% if 'profile' in request.path %}active{% endif %}">
+                <i data-lucide="user" class="w-5 h-5"></i>
+                My Profile
+            </a>
+            {% else %}
+            <div class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-slate-600">Overview</div>
+            <a href="{% url 'accounts:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                Dashboard
+            </a>
+
+            <div class="px-4 py-2 mt-6 text-[10px] font-bold uppercase tracking-widest text-slate-600">Patient Care</div>
+            <a href="{% url 'core:patient_list' %}" class="nav-link {% if 'patients' in request.path %}active{% endif %}">
+                <i data-lucide="users" class="w-5 h-5"></i>
+                Patients
+            </a>
+            <a href="{% url 'core:appointment_list' %}" class="nav-link {% if 'appointments' in request.path %}active{% endif %}">
+                <i data-lucide="calendar-days" class="w-5 h-5"></i>
+                Appointments
+            </a>
+            
+            {% if user.role != 'receptionist' %}
+            <a href="{% url 'core:record_list' %}" class="nav-link {% if 'records' in request.path %}active{% endif %}">
+                <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+                Medical Records
+            </a>
+            {% endif %}
+
+            {% if user.role == 'admin' or user.role == 'doctor' or user.is_superuser %}
+            <div class="px-4 py-2 mt-6 text-[10px] font-bold uppercase tracking-widest text-slate-600">System</div>
+            <a href="{% url 'core:reports_dashboard' %}" class="nav-link {% if 'reports' in request.path %}active{% endif %}">
+                <i data-lucide="pie-chart" class="w-5 h-5"></i>
+                Analytics
+            </a>
+            {% endif %}
+
+            {% if user.role == 'admin' or user.is_superuser %}
+            <a href="{% url 'accounts:staff_list' %}" class="nav-link {% if 'staff' in request.path %}active{% endif %}">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                Staff Management
+            </a>
+            {% endif %}
+            {% endif %}
+        </nav>
+
+        <!-- User Footer -->
+        <div class="p-4 border-t border-slate-800/50">
+            <div class="bg-slate-800/30 rounded-2xl p-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-teal-500/10 flex items-center justify-center text-teal-400 font-bold border border-teal-500/20">
+                        {{ user.first_name.0 }}{{ user.last_name.0 }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-white text-sm font-semibold truncate">{{ user.get_full_name }}</p>
+                        <p class="text-slate-500 text-[10px] uppercase font-bold">{{ user.role }}</p>
+                    </div>
+                </div>
+                <div class="mt-4 flex gap-2">
+                    <a href="{% url 'accounts:profile' %}" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg text-xs font-medium text-center transition-colors">Profile</a>
+                    <a href="{% url 'accounts:logout' %}" class="px-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 py-2 rounded-lg text-xs font-medium transition-colors">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col lg:ml-72 min-h-screen">
+        <!-- Top Header -->
+        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-10 px-8 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-500 hover:bg-slate-50 rounded-lg">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <div>
+                    <h2 class="text-slate-900 font-bold text-lg">{% block page_title %}Dashboard{% endblock %}</h2>
+                    <div class="flex items-center gap-2 text-slate-400 text-xs font-medium">
+                        <span id="current-date"></span>
+                        {% block breadcrumbs %}{% endblock %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                {% block header_actions %}{% endblock %}
+                <div class="h-8 w-[1px] bg-slate-100 mx-2"></div>
+                <div class="relative">
+                    <button class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-all">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span class="absolute top-2 right-2 w-2 h-2 bg-teal-500 border-2 border-white rounded-full"></span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Page Container -->
+        <main class="flex-1 p-8 page-fade-in">
+
+
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="px-8 py-6 border-t border-slate-100 text-center">
+            <p class="text-slate-400 text-xs font-medium">© 2026 MediCare Health Management System. All rights reserved.</p>
+        </footer>
+    </div>
+
+    {% else %}
+    <div class="w-full">
+        {% block auth_content %}{% endblock %}
+    </div>
+    {% endif %}
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Mobile Sidebar Toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            const isHidden = sidebar.classList.contains('-translate-x-full');
+            
+            if (isHidden) {
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('hidden');
+            }
+        }
+
+        // Set Current Date
+        const d = new Date();
+        const el = document.getElementById('current-date');
+        if (el) el.textContent = d.toLocaleDateString('en-US', { weekday:'long', day:'numeric', month:'long' });
+    </script>
+    {% block extra_js %}{% endblock %}
+
+    <!-- Toast Messages -->
+    {% if messages %}
+    <div id="toast-container" class="fixed top-24 right-8 z-50 flex flex-col gap-3">
+        {% for message in messages %}
+        <div class="toast-message flex items-center gap-3 p-4 pr-5 rounded-2xl text-sm border shadow-premium bg-white transform transition-all duration-300 translate-x-full opacity-0
+            {% if message.tags == 'success' %}text-teal-800 border-teal-100
+            {% elif message.tags == 'error' %}text-red-800 border-red-100
+            {% elif message.tags == 'warning' %}text-yellow-800 border-yellow-100
+            {% else %}text-slate-800 border-slate-100{% endif %}">
+            
+            {% if message.tags == 'success' %}
+            <div class="w-8 h-8 rounded-xl bg-teal-50 flex items-center justify-center flex-shrink-0"><i data-lucide="check-circle" class="w-5 h-5 text-teal-500"></i></div>
+            {% elif message.tags == 'error' %}
+            <div class="w-8 h-8 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0"><i data-lucide="alert-circle" class="w-5 h-5 text-red-500"></i></div>
+            {% else %}
+            <div class="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center flex-shrink-0"><i data-lucide="info" class="w-5 h-5 text-slate-500"></i></div>
+            {% endif %}
+            
+            <span class="font-bold flex-1">{{ message }}</span>
+            
+            <button onclick="dismissToast(this.parentElement)" class="ml-4 w-6 h-6 flex items-center justify-center text-slate-300 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-all">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        // Toast animation logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const toasts = document.querySelectorAll('.toast-message');
+            
+            // Slide in
+            setTimeout(() => {
+                toasts.forEach((toast, index) => {
+                    setTimeout(() => {
+                        toast.classList.remove('translate-x-full', 'opacity-0');
+                    }, index * 150); // Stagger animations if multiple
+                });
+            }, 100);
+
+            // Auto dismiss after 5 seconds
+            setTimeout(() => {
+                toasts.forEach(toast => {
+                    if (toast.parentElement) dismissToast(toast);
+                });
+            }, 5000);
+        });
+
+        function dismissToast(toast) {
+            toast.classList.add('translate-x-full', 'opacity-0');
+            setTimeout(() => {
+                if (toast.parentElement) toast.remove();
+            }, 300);
+        }
+    </script>
+    {% endif %}
+</body>
+</html>

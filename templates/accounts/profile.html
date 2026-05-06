@@ -1,0 +1,74 @@
+{% extends "base/base.html" %}
+
+{% block title %}My Profile – MediCare HMS{% endblock %}
+{% block page_title %}Account Settings{% endblock %}
+
+{% block breadcrumbs %}
+<span class="text-slate-300">/</span>
+<span>Profile</span>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8">
+    <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-premium p-10">
+        <div class="flex flex-col md:flex-row items-center gap-8 mb-12">
+            <div class="w-32 h-32 rounded-[2.5rem] bg-teal-50 text-teal-600 flex items-center justify-center text-3xl font-bold shadow-inner">
+                {{ user.first_name.0 }}{{ user.last_name.0 }}
+            </div>
+            <div class="flex-1 text-center md:text-left">
+                <h2 class="text-3xl font-bold text-slate-900">{{ user.get_full_name }}</h2>
+                <p class="text-slate-400 text-sm font-medium uppercase tracking-widest mt-1">{{ user.role }} · Staff ID: #{{ user.pk }}</p>
+                <div class="flex flex-wrap gap-2 mt-4 justify-center md:justify-start">
+                    <span class="bg-teal-50 text-teal-700 text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest">Active Status</span>
+                    <span class="bg-slate-50 text-slate-500 text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest">Member since {{ user.date_joined|date:"Y" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="pt-10 border-t border-slate-100">
+            <h3 class="text-slate-900 font-bold text-lg mb-8 flex items-center gap-2">
+                <i data-lucide="user" class="w-5 h-5 text-teal-600"></i>
+                Personal Information
+            </h3>
+            
+            <form method="post" class="space-y-8">
+                {% csrf_token %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {% for field in form %}
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                        <p class="text-rose-500 text-[10px] font-bold px-1 mt-1">{{ field.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="pt-8 border-t border-slate-100 flex justify-end">
+                    <button type="submit" class="bg-slate-900 text-white px-10 py-3.5 rounded-2xl text-sm font-bold hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 uppercase tracking-widest flex items-center gap-2">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                        Update Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Account Security Card -->
+    <div class="bg-rose-50 border border-rose-100 rounded-[2rem] p-8 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-rose-500 shadow-sm">
+                <i data-lucide="shield-alert" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h4 class="text-rose-900 font-bold text-sm">Security & Privacy</h4>
+                <p class="text-rose-700/60 text-xs">Manage your password and session settings.</p>
+            </div>
+        </div>
+        <a href="#" class="bg-white text-rose-700 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-rose-100 transition-all">
+            Reset Password
+        </a>
+    </div>
+</div>
+{% endblock %}

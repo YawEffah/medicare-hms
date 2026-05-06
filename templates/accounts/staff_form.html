@@ -1,0 +1,68 @@
+{% extends "base/base.html" %}
+
+{% block title %}{{ title }} – MediCare HMS{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block breadcrumbs %}
+<span class="text-slate-300">/</span>
+<a href="{% url 'accounts:staff_list' %}" class="hover:text-teal-600">Staff</a>
+<span class="text-slate-300">/</span>
+<span>{{ title }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-premium p-10">
+        <div class="mb-10 flex items-center gap-4">
+            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
+                <i data-lucide="shield-plus" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-slate-900">{{ title }}</h2>
+                <p class="text-slate-400 text-sm mt-0.5">Manage staff access and roles within the hospital system.</p>
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-8">
+            {% csrf_token %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                {% for field in form %}
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1 flex items-center justify-between">
+                        <span>{{ field.label }}</span>
+                        {% if field.field.required %}<span class="text-rose-500 font-bold">* Required</span>{% endif %}
+                    </label>
+                    
+                    <div class="relative">
+                        {{ field }}
+                        {% if field.errors %}
+                        <div class="absolute -right-2 -top-2 w-5 h-5 bg-rose-500 text-white rounded-full flex items-center justify-center text-[10px] shadow-lg shadow-rose-500/20" title="{{ field.errors.0 }}">
+                            <i data-lucide="alert-circle" class="w-3 h-3"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if field.errors %}
+                    <p class="text-rose-500 text-[10px] font-bold px-1">{{ field.errors.0 }}</p>
+                    {% endif %}
+                    {% if field.help_text %}
+                    <p class="text-slate-400 text-[10px] font-medium px-1 italic">{{ field.help_text }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="mt-12 pt-8 border-t border-slate-100 flex items-center justify-end gap-4">
+                <a href="javascript:history.back()" class="px-8 py-3 bg-slate-50 text-slate-500 rounded-2xl text-sm font-bold hover:bg-slate-100 transition-all uppercase tracking-widest">
+                    Cancel
+                </a>
+                <button type="submit" class="px-10 py-3 bg-slate-900 text-white rounded-2xl text-sm font-bold hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 uppercase tracking-widest flex items-center gap-2">
+                    <i data-lucide="user-check" class="w-4 h-4"></i>
+                    {% if staff %}Update Staff{% else %}Create Staff Member{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

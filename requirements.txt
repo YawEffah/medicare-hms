@@ -1,0 +1,6 @@
+Django==5.0.6
+Pillow==10.3.0
+django-crispy-forms==2.1
+crispy-tailwind==1.0.3
+twilio==9.2.1
+django-environ==0.11.2

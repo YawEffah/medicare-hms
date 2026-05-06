@@ -1,0 +1,31 @@
+{% extends "base/base.html" %}
+
+{% block title %}Delete Patient – MediCare HMS{% endblock %}
+{% block page_title %}Delete Patient Record{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-20">
+    <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-premium p-10 text-center">
+        <div class="w-20 h-20 bg-rose-50 text-rose-500 rounded-3xl flex items-center justify-center mx-auto mb-6">
+            <i data-lucide="user-x" class="w-10 h-10"></i>
+        </div>
+
+        <h2 class="text-2xl font-bold text-slate-900 mb-2">Are you sure?</h2>
+        <p class="text-slate-400 text-sm mb-8">
+            You are about to permanently delete the record for
+            <span class="text-slate-900 font-bold">{{ patient.full_name }}</span>
+            ({{ patient.patient_id }}). All associated appointments and medical records will also be deleted. This cannot be undone.
+        </p>
+
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <button type="submit" class="w-full bg-rose-500 hover:bg-rose-600 text-white py-4 rounded-2xl text-sm font-bold shadow-lg shadow-rose-500/20 transition-all uppercase tracking-widest">
+                Confirm Deletion
+            </button>
+            <a href="{% url 'core:patient_detail' patient.pk %}" class="block w-full bg-slate-50 text-slate-500 py-4 rounded-2xl text-sm font-bold hover:bg-slate-100 transition-all uppercase tracking-widest">
+                Cancel
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}

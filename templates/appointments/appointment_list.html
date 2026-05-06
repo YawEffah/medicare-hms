@@ -1,0 +1,122 @@
+{% extends "base/base.html" %}
+
+{% block title %}Appointments – MediCare HMS{% endblock %}
+{% block page_title %}Schedule Management{% endblock %}
+
+{% block breadcrumbs %}
+<span class="text-slate-300">/</span>
+<span>Appointments</span>
+{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'core:appointment_create' %}" class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-teal-600/20 transition-all flex items-center gap-2">
+    <i data-lucide="calendar-plus" class="w-4 h-4"></i>
+    New Appointment
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Modern Filters -->
+    <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-premium">
+        <form method="get" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-1">From Date</label>
+                <input type="date" name="date_from" value="{{ request.GET.date_from }}" 
+                       class="w-full bg-slate-50 border-none rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500/20">
+            </div>
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-1">To Date</label>
+                <input type="date" name="date_to" value="{{ request.GET.date_to }}" 
+                       class="w-full bg-slate-50 border-none rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500/20">
+            </div>
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-1">Status</label>
+                {{ form.status }}
+            </div>
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-1">Practitioner</label>
+                {{ form.doctor }}
+            </div>
+            <div class="flex gap-2">
+                <button type="submit" class="flex-1 bg-slate-900 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-slate-800 transition-all">
+                    Apply
+                </button>
+                <a href="{% url 'core:appointment_list' %}" class="p-2.5 bg-slate-100 text-slate-500 rounded-xl hover:bg-slate-200 transition-all" title="Reset Filters">
+                    <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Appointments Table -->
+    <div class="bg-white rounded-[2rem] border border-slate-100 shadow-premium overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50/50">
+                        <th class="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-500">Patient</th>
+                        <th class="px-6 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-500">Practitioner</th>
+                        <th class="px-6 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-500">Schedule</th>
+                        <th class="px-6 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-500">Type</th>
+                        <th class="px-6 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-500">Status</th>
+                        <th class="px-6 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-500 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    {% for appt in appointments %}
+                    <tr class="group hover:bg-slate-50/50 transition-all duration-200">
+                        <td class="px-8 py-5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-slate-50 text-slate-500 flex items-center justify-center font-bold text-xs group-hover:bg-teal-50 group-hover:text-teal-600 transition-colors">
+                                    {{ appt.patient.first_name.0 }}{{ appt.patient.last_name.0 }}
+                                </div>
+                                <div>
+                                    <a href="{% url 'core:patient_detail' appt.patient.pk %}" class="text-slate-900 font-bold text-sm hover:text-teal-600">{{ appt.patient.full_name }}</a>
+                                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">{{ appt.patient.patient_id }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-5">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="stethoscope" class="w-4 h-4 text-slate-300"></i>
+                                <span class="text-slate-600 text-sm font-medium">Dr. {{ appt.doctor.get_full_name }}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-5">
+                            <div class="flex flex-col">
+                                <span class="text-slate-900 text-sm font-bold">{{ appt.appointment_date|date:"d M Y" }}</span>
+                                <span class="text-slate-400 text-[10px] font-bold uppercase">{{ appt.appointment_time|time:"h:i A" }}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-5">
+                            <span class="text-slate-500 text-xs font-medium">{{ appt.get_appointment_type_display }}</span>
+                        </td>
+                        <td class="px-6 py-5">
+                            <span class="badge-{{ appt.status }}">{{ appt.get_status_display }}</span>
+                        </td>
+                        <td class="px-6 py-5 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <a href="{% url 'core:appointment_detail' appt.pk %}" class="p-2 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-teal-600 hover:border-teal-200 hover:bg-teal-50 transition-all">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </a>
+                                <a href="{% url 'core:appointment_update' appt.pk %}" class="p-2 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-all">
+                                    <i data-lucide="edit-2" class="w-4 h-4"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-8 py-20 text-center text-slate-400 italic text-sm">
+                            <i data-lucide="calendar-x" class="w-12 h-12 mx-auto mb-4 opacity-10"></i>
+                            No appointments found matching the filters.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

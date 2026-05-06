@@ -1,0 +1,78 @@
+{% extends "base/base.html" %}
+
+{% block title %}Staff Management – MediCare HMS{% endblock %}
+{% block page_title %}Hospital Staff{% endblock %}
+
+{% block breadcrumbs %}
+<span class="text-slate-300">/</span>
+<span>Staff Directory</span>
+{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'accounts:staff_create' %}" class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-teal-600/20 transition-all flex items-center gap-2">
+    <i data-lucide="user-plus" class="w-4 h-4"></i>
+    Add Staff Member
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="bg-white rounded-[2rem] border border-slate-100 shadow-premium overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50/50">
+                        <th class="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-500">Staff Member</th>
+                        <th class="px-6 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-500">Role</th>
+                        <th class="px-6 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-500">Contact</th>
+                        <th class="px-6 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-500">Status</th>
+                        <th class="px-6 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-500 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    {% for member in staff %}
+                    <tr class="group hover:bg-slate-50/50 transition-all duration-200">
+                        <td class="px-8 py-5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center font-bold text-xs">
+                                    {{ member.first_name.0 }}{{ member.last_name.0 }}
+                                </div>
+                                <div>
+                                    <p class="text-slate-900 font-bold text-sm">{{ member.get_full_name }}</p>
+                                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">{{ member.username }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-5">
+                            <span class="text-slate-700 text-sm font-medium capitalize">{{ member.role }}</span>
+                        </td>
+                        <td class="px-6 py-5">
+                            <p class="text-slate-600 text-sm">{{ member.email|default:"No email" }}</p>
+                        </td>
+                        <td class="px-6 py-5">
+                            {% if member.is_active %}
+                            <span class="bg-teal-50 text-teal-700 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">Active</span>
+                            {% else %}
+                            <span class="bg-slate-100 text-slate-400 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-5 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <a href="{% url 'accounts:staff_update' member.pk %}" class="p-2 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-all">
+                                    <i data-lucide="edit-2" class="w-4 h-4"></i>
+                                </a>
+                                {% if member.pk != user.pk %}
+                                <a href="{% url 'accounts:staff_delete' member.pk %}" class="p-2 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50 transition-all">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

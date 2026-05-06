@@ -1,0 +1,145 @@
+{% extends "base/base.html" %}
+
+{% block title %}Appointment Detail – MediCare HMS{% endblock %}
+{% block page_title %}Appointment Details{% endblock %}
+
+{% block breadcrumbs %}
+<span class="text-slate-300">/</span>
+<a href="{% url 'core:appointment_list' %}" class="hover:text-teal-600">Appointments</a>
+<span class="text-slate-300">/</span>
+<span>{{ appointment.patient.patient_id }}</span>
+{% endblock %}
+
+{% block header_actions %}
+<div class="flex items-center gap-3">
+    {% if appointment.status != 'cancelled' and appointment.status != 'completed' %}
+    <a href="{% url 'core:appointment_update' appointment.pk %}" class="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-all flex items-center gap-2">
+        <i data-lucide="edit-3" class="w-4 h-4"></i>
+        Reschedule
+    </a>
+    <form method="post" action="{% url 'core:appointment_cancel' appointment.pk %}" class="inline">
+        {% csrf_token %}
+        <button type="submit" class="bg-rose-50 text-rose-600 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-rose-100 transition-all flex items-center gap-2" onclick="return confirm('Are you sure you want to cancel this appointment?')">
+            <i data-lucide="x-circle" class="w-4 h-4"></i>
+            Cancel
+        </button>
+    </form>
+    {% endif %}
+    <a href="{% url 'core:record_create' %}?patient={{ appointment.patient.pk }}&appointment={{ appointment.pk }}" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-lg shadow-teal-600/20 transition-all flex items-center gap-2">
+        <i data-lucide="clipboard-check" class="w-4 h-4"></i>
+        Start Consultation
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-premium overflow-hidden">
+        <!-- Status Header -->
+        <div class="px-10 py-6 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <span class="badge-{{ appointment.status }} text-xs">{{ appointment.get_status_display }}</span>
+                <span class="text-slate-300">/</span>
+                <span class="text-slate-500 text-xs font-bold uppercase tracking-widest">{{ appointment.get_appointment_type_display }}</span>
+            </div>
+            <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Created on {{ appointment.created_at|date:"M d, Y" }}</p>
+        </div>
+
+        <div class="p-10 space-y-12">
+            <!-- Patient & Doctor Info -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="space-y-4">
+                    <h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Patient</h3>
+                    <div class="flex items-center gap-4 p-4 rounded-3xl bg-slate-50/50 border border-slate-100">
+                        <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold">
+                            {{ appointment.patient.first_name.0 }}{{ appointment.patient.last_name.0 }}
+                        </div>
+                        <div>
+                            <a href="{% url 'core:patient_detail' appointment.patient.pk %}" class="text-slate-900 font-bold text-base hover:text-teal-600">{{ appointment.patient.full_name }}</a>
+                            <p class="text-slate-400 text-xs">{{ appointment.patient.patient_id }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Practitioner</h3>
+                    <div class="flex items-center gap-4 p-4 rounded-3xl bg-slate-50/50 border border-slate-100">
+                        <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                            DR
+                        </div>
+                        <div>
+                            <p class="text-slate-900 font-bold text-base">Dr. {{ appointment.doctor.get_full_name }}</p>
+                            <p class="text-slate-400 text-xs">{{ appointment.doctor.specialty|default:"General Practitioner" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schedule Info -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="p-6 rounded-3xl bg-slate-50/30 border border-slate-100 flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-400 shadow-sm">
+                        <i data-lucide="calendar" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Date</p>
+                        <p class="text-slate-900 font-bold text-sm">{{ appointment.appointment_date|date:"l, d M Y" }}</p>
+                    </div>
+                </div>
+                <div class="p-6 rounded-3xl bg-slate-50/30 border border-slate-100 flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-400 shadow-sm">
+                        <i data-lucide="clock" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Time</p>
+                        <p class="text-slate-900 font-bold text-sm">{{ appointment.appointment_time|time:"h:i A" }}</p>
+                    </div>
+                </div>
+                <div class="p-6 rounded-3xl bg-slate-50/30 border border-slate-100 flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-400 shadow-sm">
+                        <i data-lucide="message-square" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Notifications</p>
+                        <p class="text-slate-900 font-bold text-sm">{% if appointment.notification_sent %}Sent{% else %}Pending{% endif %}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reason & Notes -->
+            <div class="space-y-6">
+                <div class="space-y-3">
+                    <h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Reason for Visit</h3>
+                    <div class="p-6 rounded-3xl bg-slate-50/50 border border-slate-100">
+                        <p class="text-slate-700 leading-relaxed">{{ appointment.reason|default:"No reason provided." }}</p>
+                    </div>
+                </div>
+                {% if appointment.notes %}
+                <div class="space-y-3">
+                    <h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Additional Notes</h3>
+                    <div class="p-6 rounded-3xl bg-slate-50/50 border border-slate-100 italic">
+                        <p class="text-slate-500 leading-relaxed">{{ appointment.notes }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="px-10 py-8 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
+            <a href="{% url 'core:appointment_list' %}" class="text-slate-400 text-xs font-bold uppercase tracking-widest hover:text-slate-600 transition-colors flex items-center gap-2">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                Back to List
+            </a>
+            <div class="flex gap-4">
+                <button class="text-slate-400 hover:text-teal-600 transition-colors" title="Print Appointment Card">
+                    <i data-lucide="printer" class="w-5 h-5"></i>
+                </button>
+                <button class="text-slate-400 hover:text-teal-600 transition-colors" title="Share Details">
+                    <i data-lucide="share-2" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
