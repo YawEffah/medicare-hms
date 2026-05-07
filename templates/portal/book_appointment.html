@@ -23,6 +23,17 @@
 
         <form method="post" class="space-y-6">
             {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="p-4 bg-rose-50 border border-rose-100 rounded-2xl">
+                {% for error in form.non_field_errors %}
+                <p class="text-rose-600 text-sm font-medium flex items-center gap-2">
+                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                    {{ error }}
+                </p>
+                {% endfor %}
+            </div>
+            {% endif %}
             
             <!-- Hide the Patient field since it's prefilled and secure in backend -->
             {{ form.patient }}

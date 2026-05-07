@@ -34,4 +34,8 @@ urlpatterns = [
     path('', views.landing_view, name='landing'),
     path('portal/dashboard/', views.patient_dashboard_view, name='patient_dashboard'),
     path('portal/book/', views.patient_book_appointment_view, name='patient_book_appointment'),
+
+    # Notifications API
+    path('api/notifications/', views.api_notifications, name='api_notifications'),
+    path('api/notifications/<int:pk>/read/', views.api_mark_notification_read, name='api_mark_notification_read'),
 ]

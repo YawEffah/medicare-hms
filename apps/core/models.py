@@ -87,6 +87,12 @@ class Appointment(models.Model):
 
     class Meta:
         ordering = ['-appointment_date', '-appointment_time']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['doctor', 'appointment_date', 'appointment_time'],
+                name='unique_doctor_appointment'
+            )
+        ]
 
 
 class MedicalRecord(models.Model):
@@ -131,3 +137,26 @@ class VitalSign(models.Model):
 
     def __str__(self):
         return f"Vitals for {self.record.patient.full_name} on {self.record.visit_date}"
+
+
+class Notification(models.Model):
+    CATEGORY_CHOICES = [
+        ('appointment', 'Appointment'),
+        ('record', 'Medical Record'),
+        ('billing', 'Billing'),
+        ('system', 'System'),
+    ]
+
+    recipient = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='notifications')
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='system')
+    link = models.CharField(max_length=255, blank=True, null=True)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.title} - {self.recipient.username}"

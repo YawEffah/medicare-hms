@@ -64,6 +64,29 @@ class AppointmentForm(forms.ModelForm):
             if isinstance(field.widget, forms.Textarea):
                 field.widget.attrs['rows'] = 3
 
+    def clean(self):
+        cleaned_data = super().clean()
+        doctor = cleaned_data.get('doctor')
+        appointment_date = cleaned_data.get('appointment_date')
+        appointment_time = cleaned_data.get('appointment_time')
+
+        if doctor and appointment_date and appointment_time:
+            # Check for existing appointments at the same time for this doctor
+            # Exclude the current instance if we are updating
+            query = Appointment.objects.filter(
+                doctor=doctor,
+                appointment_date=appointment_date,
+                appointment_time=appointment_time
+            )
+            if self.instance.pk:
+                query = query.exclude(pk=self.instance.pk)
+
+            if query.exists():
+                doctor_name = doctor.get_full_name() or doctor.username
+                self.add_error('doctor', f"Dr. {doctor_name} already has an appointment scheduled on {appointment_date} at {appointment_time.strftime('%I:%M %p')}. Please choose another slot.")
+
+        return cleaned_data
+
 
 class AppointmentFilterForm(forms.Form):
     date_from = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-input'}))

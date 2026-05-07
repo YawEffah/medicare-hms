@@ -8,7 +8,7 @@ from django.db.models import Q, Count
 from django.utils import timezone
 from datetime import date, timedelta, datetime
 
-from .models import Patient, Appointment, MedicalRecord, VitalSign
+from .models import Patient, Appointment, MedicalRecord, VitalSign, Notification
 from .forms import (
     PatientForm, PatientSearchForm, 
     AppointmentForm, AppointmentFilterForm,
@@ -423,3 +423,26 @@ def patient_book_appointment_view(request):
         return redirect('core:patient_dashboard')
 
     return render(request, 'portal/book_appointment.html', {'form': form})
+from django.http import JsonResponse
+
+# --- Notification Views ---
+
+@login_required
+def api_notifications(request):
+    notifications = Notification.objects.filter(recipient=request.user, is_read=False)[:5]
+    data = [{
+        'id': n.id,
+        'title': n.title,
+        'message': n.message,
+        'category': n.category,
+        'link': n.link,
+        'created_at': n.created_at.strftime('%b %d, %H:%M')
+    } for n in notifications]
+    return JsonResponse({'notifications': data, 'count': request.user.notifications.filter(is_read=False).count()})
+
+@login_required
+def api_mark_notification_read(request, pk):
+    notification = get_object_or_404(Notification, pk=pk, recipient=request.user)
+    notification.is_read = True
+    notification.save()
+    return JsonResponse({'status': 'success'})
