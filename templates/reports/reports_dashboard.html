@@ -9,10 +9,20 @@
 {% endblock %}
 
 {% block header_actions %}
-<a href="{% url 'core:daily_report' %}" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-slate-900/20 transition-all flex items-center gap-2">
-    <i data-lucide="file-text" class="w-4 h-4"></i>
-    Generate Daily Report
-</a>
+<div class="flex flex-wrap items-center gap-3">
+    <a href="{% url 'core:daily_report' %}?period=day" class="bg-white border border-slate-200 text-slate-700 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all flex items-center gap-2">
+        <i data-lucide="calendar" class="w-4 h-4 text-teal-600"></i>
+        Daily Report
+    </a>
+    <a href="{% url 'core:daily_report' %}?period=week" class="bg-white border border-slate-200 text-slate-700 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all flex items-center gap-2">
+        <i data-lucide="calendar-days" class="w-4 h-4 text-blue-600"></i>
+        Weekly Report
+    </a>
+    <a href="{% url 'core:daily_report' %}?period=month" class="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all flex items-center gap-2">
+        <i data-lucide="calendar-range" class="w-4 h-4 text-teal-400"></i>
+        Monthly Report
+    </a>
+</div>
 {% endblock %}
 
 {% block content %}
@@ -61,43 +71,16 @@
         <!-- Status Breakdown -->
         <div class="lg:col-span-1 space-y-6">
             <h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 px-4">Status Distribution</h3>
-            <div class="bg-white rounded-[2rem] border border-slate-100 shadow-premium p-8 space-y-6">
-                {% for status, count in appt_by_status.items %}
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-slate-600 text-xs font-bold uppercase tracking-widest">{{ status }}</span>
-                        <span class="text-slate-900 font-bold text-sm">{{ count }}</span>
-                    </div>
-                    <div class="w-full bg-slate-50 h-2 rounded-full overflow-hidden">
-                        <div class="h-full rounded-full 
-                            {% if status == 'completed' %}bg-teal-500
-                            {% elif status == 'scheduled' %}bg-blue-500
-                            {% elif status == 'cancelled' %}bg-rose-500
-                            {% else %}bg-amber-500{% endif %}" 
-                            style="width: {% widthratio count total_patients 100 %}%">
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
+            <div class="bg-white rounded-[2rem] border border-slate-100 shadow-premium p-8 h-[400px] flex items-center justify-center">
+                <canvas id="statusChart"></canvas>
             </div>
         </div>
 
         <!-- Growth Chart -->
         <div class="lg:col-span-2 space-y-6">
             <h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 px-4">{% if is_doctor_report %}Patients Seen (6 Months){% else %}Patient Registrations (6 Months){% endif %}</h3>
-            <div class="bg-white rounded-[2rem] border border-slate-100 shadow-premium p-10">
-                <div class="flex items-end justify-between h-48 gap-4">
-                    {% for entry in monthly_patients %}
-                    <div class="flex-1 flex flex-col items-center gap-4 group">
-                        <div class="relative w-full flex flex-col items-center">
-                            <span class="absolute -top-8 text-teal-600 font-bold text-xs opacity-0 group-hover:opacity-100 transition-opacity">{{ entry.count }}</span>
-                            <div class="w-full bg-teal-50 group-hover:bg-teal-100 rounded-2xl transition-all duration-500 shadow-inner" 
-                                 style="height: {% widthratio entry.count 20 180 %}px; min-height: 8px;"></div>
-                        </div>
-                        <span class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">{{ entry.month }}</span>
-                    </div>
-                    {% endfor %}
-                </div>
+            <div class="bg-white rounded-[2rem] border border-slate-100 shadow-premium p-8 h-[400px]">
+                <canvas id="growthChart"></canvas>
             </div>
         </div>
     </div>
@@ -130,4 +113,93 @@
     </div>
     {% endif %}
 </div>
+
+{% block extra_js %}
+<script>
+    // Status Distribution Chart
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: [{% for status, count in appt_by_status.items %}"{{ status|title }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+            datasets: [{
+                data: [{% for status, count in appt_by_status.items %}{{ count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+                backgroundColor: [
+                    '#0d9488', // Completed
+                    '#2563eb', // Scheduled
+                    '#e11d48', // Cancelled
+                    '#d97706'  // No-show
+                ],
+                borderWidth: 0,
+                hoverOffset: 15
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '75%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20,
+                        font: {
+                            family: 'Inter, sans-serif',
+                            size: 10,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Growth Chart
+    const growthCtx = document.getElementById('growthChart').getContext('2d');
+    const gradient = growthCtx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(13, 148, 136, 0.6)');
+    gradient.addColorStop(1, 'rgba(13, 148, 136, 0.05)');
+
+    new Chart(growthCtx, {
+        type: 'bar',
+        data: {
+            labels: [{% for entry in monthly_patients %}"{{ entry.month }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Activity',
+                data: [{% for entry in monthly_patients %}{{ entry.count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+                backgroundColor: gradient,
+                borderColor: '#0d9488',
+                borderWidth: 2,
+                borderRadius: 12,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { display: false },
+                    ticks: {
+                        font: { size: 10, weight: 'bold' },
+                        color: '#94a3b8'
+                    }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        font: { size: 10, weight: 'bold' },
+                        color: '#94a3b8'
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
 {% endblock %}

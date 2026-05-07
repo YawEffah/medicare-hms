@@ -331,6 +331,7 @@ def reports_dashboard_view(request):
 @role_required(['admin', 'doctor'])
 def daily_report_view(request):
     report_date_str = request.GET.get('date')
+    period = request.GET.get('period', 'day')
     user = request.user
     
     try:
@@ -338,9 +339,26 @@ def daily_report_view(request):
     except (ValueError, TypeError):
         report_date = date.today()
 
+    # Calculate date range based on period
+    start_date = report_date
+    end_date = report_date
+    period_label = report_date.strftime('%d %B %Y')
+
+    if period == 'week':
+        start_date = report_date - timedelta(days=report_date.weekday())
+        end_date = start_date + timedelta(days=6)
+        period_label = f"Week of {start_date.strftime('%d %b')} – {end_date.strftime('%d %b %Y')}"
+    elif period == 'month':
+        start_date = report_date.replace(day=1)
+        if report_date.month == 12:
+            end_date = report_date.replace(year=report_date.year + 1, month=1, day=1) - timedelta(days=1)
+        else:
+            end_date = report_date.replace(month=report_date.month + 1, day=1) - timedelta(days=1)
+        period_label = report_date.strftime('%B %Y')
+
     appointments = Appointment.objects.filter(
-        appointment_date=report_date
-    ).select_related('patient', 'doctor').order_by('appointment_time')
+        appointment_date__range=[start_date, end_date]
+    ).select_related('patient', 'doctor').order_by('appointment_date', 'appointment_time')
     
     if user.role == 'doctor':
         appointments = appointments.filter(doctor=user)
@@ -348,6 +366,8 @@ def daily_report_view(request):
     context = {
         'appointments': appointments,
         'report_date': report_date,
+        'period': period,
+        'period_label': period_label,
         'total': appointments.count(),
         'completed': appointments.filter(status='completed').count(),
         'cancelled': appointments.filter(status='cancelled').count(),
