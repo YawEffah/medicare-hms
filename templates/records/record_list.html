@@ -28,7 +28,24 @@
                 <p class="text-slate-900 font-bold text-xl">{{ records.count }}</p>
             </div>
         </div>
-        <!-- Add more mini stats if needed -->
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-premium flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <i data-lucide="user" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Male Records</p>
+                <p class="text-slate-900 font-bold text-xl">{{ male_count }}</p>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-premium flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center">
+                <i data-lucide="user-round" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Female Records</p>
+                <p class="text-slate-900 font-bold text-xl">{{ female_count }}</p>
+            </div>
+        </div>
     </div>
 
     <!-- Records Table -->

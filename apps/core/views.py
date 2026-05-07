@@ -188,7 +188,11 @@ def record_list_view(request):
     patient_id = request.GET.get('patient')
     if patient_id:
         records = records.filter(patient_id=patient_id)
-    return render(request, 'records/record_list.html', {'records': records})
+    return render(request, 'records/record_list.html', {
+        'records': records,
+        'male_count': records.filter(patient__gender='M').count(),
+        'female_count': records.filter(patient__gender='F').count(),
+    })
 
 
 @login_required
