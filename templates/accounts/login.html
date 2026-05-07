@@ -3,9 +3,9 @@
 {% block title %}Login – MediCare HMS{% endblock %}
 
 {% block auth_content %}
-<div class="min-h-screen flex bg-slate-50">
+<div class="h-screen flex bg-slate-50 overflow-hidden">
     <!-- Left Panel: Brand & Info -->
-    <div class="hidden lg:flex lg:w-3/5 bg-slate-900 relative overflow-hidden flex-col justify-between p-16">
+    <div class="hidden lg:flex lg:w-3/5 bg-slate-900 relative overflow-hidden flex-col justify-between p-16 h-full">
         <!-- Abstract Background Shapes -->
         <div class="absolute top-0 right-0 w-96 h-96 bg-teal-500/20 rounded-full blur-[100px] -mr-48 -mt-48"></div>
         <div class="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] -ml-48 -mb-48"></div>
@@ -54,7 +54,7 @@
     </div>
 
     <!-- Right Panel: Login Form -->
-    <div class="w-full lg:w-2/5 flex flex-col justify-center px-8 sm:px-16 lg:px-24 bg-white relative">
+    <div class="w-full lg:w-2/5 flex flex-col justify-center px-8 sm:px-16 lg:px-24 bg-white relative h-full overflow-y-auto">
         <div class="max-w-md w-full mx-auto">
             <div class="mb-10">
                 <h3 class="text-slate-900 text-3xl font-bold mb-2">Welcome Back</h3>

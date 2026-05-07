@@ -3,9 +3,9 @@
 {% block title %}Patient Registration – MediCare HMS{% endblock %}
 
 {% block auth_content %}
-<div class="min-h-screen flex bg-slate-50">
+<div class="h-screen flex bg-slate-50 overflow-hidden">
     <!-- Left Panel: Brand & Info -->
-    <div class="hidden lg:flex lg:w-2/5 bg-slate-900 relative overflow-hidden flex-col justify-between p-16">
+    <div class="hidden lg:flex lg:w-2/5 bg-slate-900 relative overflow-hidden flex-col justify-between p-16 h-full">
         <!-- Abstract Background Shapes -->
         <div class="absolute top-0 right-0 w-96 h-96 bg-teal-500/20 rounded-full blur-[100px] -mr-48 -mt-48"></div>
         <div class="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] -ml-48 -mb-48"></div>
@@ -35,7 +35,7 @@
     </div>
 
     <!-- Right Panel: Registration Form -->
-    <div class="w-full lg:w-3/5 flex flex-col justify-center px-8 sm:px-16 lg:px-24 bg-white relative py-12 h-screen overflow-y-auto">
+    <div class="w-full lg:w-3/5 flex flex-col px-8 sm:px-16 lg:px-24 bg-white relative py-12 h-full overflow-y-auto">
         <div class="max-w-2xl w-full mx-auto">
             <div class="mb-10">
                 <h3 class="text-slate-900 text-3xl font-bold mb-2">Create an Account</h3>
@@ -46,15 +46,64 @@
                 {% csrf_token %}
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {% for field in form %}
-                    <div class="space-y-2 {% if field.name == 'username' or field.name == 'email' or field.name == 'address' %}md:col-span-2{% endif %}">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1">{{ field.label }}</label>
-                        {{ field }}
-                        {% if field.errors %}
-                        <p class="text-rose-500 text-xs mt-1">{{ field.errors.0 }}</p>
-                        {% endif %}
+                    <!-- Row 1: Names -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1">{{ form.first_name.label }}</label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}<p class="text-rose-500 text-xs mt-1">{{ form.first_name.errors.0 }}</p>{% endif %}
                     </div>
-                    {% endfor %}
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1">{{ form.last_name.label }}</label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}<p class="text-rose-500 text-xs mt-1">{{ form.last_name.errors.0 }}</p>{% endif %}
+                    </div>
+
+                    <!-- Row 2: Username -->
+                    <div class="space-y-2 md:col-span-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1">{{ form.username.label }}</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}<p class="text-rose-500 text-xs mt-1">{{ form.username.errors.0 }}</p>{% endif %}
+                    </div>
+
+                    <!-- Row 3: DOB & Gender -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1">{{ form.date_of_birth.label }}</label>
+                        {{ form.date_of_birth }}
+                        {% if form.date_of_birth.errors %}<p class="text-rose-500 text-xs mt-1">{{ form.date_of_birth.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1">{{ form.gender.label }}</label>
+                        {{ form.gender }}
+                        {% if form.gender.errors %}<p class="text-rose-500 text-xs mt-1">{{ form.gender.errors.0 }}</p>{% endif %}
+                    </div>
+
+                    <!-- Row 4: Phone & Email -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1">{{ form.phone.label }}</label>
+                        {{ form.phone }}
+                        {% if form.phone.errors %}<p class="text-rose-500 text-xs mt-1">{{ form.phone.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1">{{ form.email.label }}</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}<p class="text-rose-500 text-xs mt-1">{{ form.email.errors.0 }}</p>{% endif %}
+                    </div>
+
+                    <!-- Row 5: Passwords -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1">{{ form.password1.label }}</label>
+                        <div class="relative">
+                            {{ form.password1 }}
+                        </div>
+                        {% if form.password1.errors %}<p class="text-rose-500 text-xs mt-1">{{ form.password1.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-1">{{ form.password2.label }}</label>
+                        <div class="relative">
+                            {{ form.password2 }}
+                        </div>
+                        {% if form.password2.errors %}<p class="text-rose-500 text-xs mt-1">{{ form.password2.errors.0 }}</p>{% endif %}
+                    </div>
                 </div>
 
                 <div class="pt-6">

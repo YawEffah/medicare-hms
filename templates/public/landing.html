@@ -3,25 +3,12 @@
 {% block title %}Welcome to MediCare HMS{% endblock %}
 
 {% block auth_content %}
-<div class="min-h-screen bg-slate-50 font-sans text-slate-900 relative overflow-hidden">
-    <!-- Navbar -->
-    <nav class="absolute top-0 w-full px-8 py-6 flex justify-between items-center z-50">
-        <div class="flex items-center gap-3">
-            <div
-                class="w-10 h-10 bg-teal-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-teal-500/20">
-                <i data-lucide="activity" class="w-6 h-6"></i>
-            </div>
-            <span class="font-bold text-xl tracking-tight text-slate-900">MediCare</span>
-        </div>
-        <div class="flex items-center gap-4">
-            <a href="{% url 'accounts:login' %}"
-                class="text-slate-500 hover:text-teal-600 font-bold text-sm transition-colors">Login</a>
-        </div>
-    </nav>
+<div class="min-h-screen lg:h-screen hero-bg font-sans text-slate-900 relative overflow-y-auto lg:overflow-hidden flex flex-col justify-center py-12 lg:py-0">
+
 
     <!-- Hero Section -->
     <main
-        class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 px-8 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 z-10">
+        class="relative w-full px-8 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 z-10">
 
         <!-- Text Content -->
         <div class="w-full lg:w-1/2">
@@ -31,12 +18,12 @@
                 Now Accepting New Patients
             </div>
 
-            <h1 class="text-5xl lg:text-7xl font-bold leading-[1.1] mb-6 text-slate-900">
+            <h1 class="text-5xl lg:text-7xl font-bold leading-[1.1] mb-6 text-white">
                 Premium Healthcare, <br>
-                <span class="text-teal-600">At Your Fingertips.</span>
+                <span class="text-teal-400">At Your Fingertips.</span>
             </h1>
 
-            <p class="text-lg text-slate-500 mb-10 max-w-lg leading-relaxed">
+            <p class="text-lg text-slate-100 mb-10 max-w-lg leading-relaxed">
                 Experience seamless medical care with our modern patient portal. Book appointments, view your medical
                 history, and manage your health securely from any device.
             </p>
@@ -53,17 +40,17 @@
                 </a>
             </div>
 
-            <div class="mt-12 flex items-center gap-6 text-sm text-slate-500 font-medium">
+            <div class="mt-12 flex items-center gap-6 text-sm text-slate-200 font-medium">
                 <div class="flex items-center gap-2">
-                    <i data-lucide="check-circle-2" class="w-5 h-5 text-teal-500"></i>
+                    <i data-lucide="check-circle-2" class="w-5 h-5 text-teal-400"></i>
                     <span>Secure Data</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <i data-lucide="check-circle-2" class="w-5 h-5 text-teal-500"></i>
+                    <i data-lucide="check-circle-2" class="w-5 h-5 text-teal-400"></i>
                     <span>Instant Booking</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <i data-lucide="check-circle-2" class="w-5 h-5 text-teal-500"></i>
+                    <i data-lucide="check-circle-2" class="w-5 h-5 text-teal-400"></i>
                     <span>Digital Records</span>
                 </div>
             </div>
@@ -79,7 +66,7 @@
             </div>
 
             <div
-                class="bg-white/60 backdrop-blur-xl border border-white p-8 rounded-[2rem] shadow-2xl relative z-10 transform rotate-2 hover:rotate-0 transition-transform duration-500">
+                class="glass p-8 rounded-[2rem] shadow-2xl relative z-10 transform rotate-2 hover:rotate-0 transition-all duration-500">
                 <div class="flex items-center justify-between mb-8">
                     <div>
                         <h3 class="font-bold text-slate-900 text-lg">Upcoming Appointment</h3>

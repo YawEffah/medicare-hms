@@ -55,6 +55,7 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-slate-50 min-h-screen flex">
+    <div id="page-loader"></div>
 
     {% if user.is_authenticated %}
     <!-- Mobile Backdrop -->
@@ -224,6 +225,79 @@
         const d = new Date();
         const el = document.getElementById('current-date');
         if (el) el.textContent = d.toLocaleDateString('en-US', { weekday:'long', day:'numeric', month:'long' });
+
+        // Global Form Loading Handler
+        document.addEventListener('submit', (e) => {
+            const form = e.target;
+            const submitBtn = form.querySelector('[type="submit"]');
+            
+            if (submitBtn && !submitBtn.classList.contains('no-loader')) {
+                // Trigger page loader
+                const loader = document.getElementById('page-loader');
+                if (loader) {
+                    loader.style.width = '70%';
+                    setTimeout(() => { loader.style.width = '90%'; }, 500);
+                }
+
+                // Update button state
+                const spinner = document.createElement('div');
+                spinner.className = 'loading-spinner';
+                spinner.innerHTML = `
+                    <svg class="spinner h-5 w-5 block m-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                `;
+
+                const content = document.createElement('span');
+                content.className = 'btn-content';
+                // Move existing children to the span
+                while (submitBtn.firstChild) {
+                    content.appendChild(submitBtn.firstChild);
+                }
+
+                submitBtn.classList.add('btn-loading');
+                submitBtn.appendChild(spinner);
+                submitBtn.appendChild(content);
+            }
+        });
+
+        // Password Visibility Toggler
+        function initPasswordTogglers() {
+            const passwordInputs = document.querySelectorAll('input[type="password"]');
+            passwordInputs.forEach(input => {
+                // Prevent duplicate togglers
+                if (input.nextElementSibling && input.nextElementSibling.classList.contains('password-toggle')) return;
+
+                // Ensure parent is relative
+                let wrapper = input.parentElement;
+                if (!wrapper.classList.contains('relative')) {
+                    wrapper.classList.add('relative');
+                }
+
+                // Add padding-right to input so text doesn't overlap
+                input.style.paddingRight = '3rem';
+
+                // Create toggle button
+                const toggleBtn = document.createElement('div');
+                toggleBtn.className = 'password-toggle';
+                toggleBtn.innerHTML = '<i data-lucide="eye" class="w-5 h-5"></i>';
+                
+                toggleBtn.addEventListener('click', () => {
+                    const isPassword = input.getAttribute('type') === 'password';
+                    input.setAttribute('type', isPassword ? 'text' : 'password');
+                    toggleBtn.innerHTML = isPassword 
+                        ? '<i data-lucide="eye-off" class="w-5 h-5"></i>' 
+                        : '<i data-lucide="eye" class="w-5 h-5"></i>';
+                    lucide.createIcons();
+                });
+
+                input.after(toggleBtn);
+            });
+            lucide.createIcons();
+        }
+
+        document.addEventListener('DOMContentLoaded', initPasswordTogglers);
     </script>
     {% block extra_js %}{% endblock %}
 
